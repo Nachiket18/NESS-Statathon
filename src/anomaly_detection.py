@@ -41,6 +41,9 @@ class transactionTree:
 
 class transactionMapping:
     
+    def __init__(self):
+        pass
+
     def binSearch(self, arr, target): 
         left = 0 
         right = len(arr) - 1
