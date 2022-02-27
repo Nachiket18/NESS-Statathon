@@ -89,6 +89,6 @@ if __name__ == "__main__":
 
         tM = anom_detect.transactionMapping
 
-        o = tM.createTransactionTree(tM, dataset = horiz_ds, length=len(horiz_ds))
+        o = tM.createTransactionTree(dataset = horiz_ds, length=len(horiz_ds))
         print(tM)
         print(o)
