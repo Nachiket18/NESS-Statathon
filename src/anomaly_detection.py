@@ -9,6 +9,7 @@ Created on 17-Feb-2022
 #     itemset = []
 #     no_items = int()
 
+from collections import OrderedDict
 
 class horizontalDataset:
     t_id = int()
@@ -16,7 +17,8 @@ class horizontalDataset:
     
     def __init__(self, t_id, item):
         self.t_id = t_id
-        self.item = item 
+        self.item = item
+         
 
 class transactionTree:
     
@@ -38,9 +40,7 @@ class transactionTree:
 
 
 class transactionMapping:
-
-    ## Binary search implementation
-    ## NOTE: Left and right take in index values. 
+    
     def binSearch(self, arr, target): 
         left = 0 
         right = len(arr) - 1
@@ -62,7 +62,7 @@ class transactionMapping:
 
         return None
 
-    def createTransactionTree(self,dataset,length):
+    def createTransactionTree(self,dataset:list,length:int):
 
 
 
@@ -76,7 +76,7 @@ class transactionMapping:
         ## Collecting the set of 1-frequent items F and their supports.
         ##
     
-        for i in range(0,length - 1):
+        for i in range(0,length):
             data = dataset[i].item
             for j in range(0,len(data)):
                 if data[j] in freqent_itemset:
@@ -85,50 +85,63 @@ class transactionMapping:
                     freqent_itemset[data[j]] = 1
         
         ##
-        ## Sorting frequent itemset and deleting values with a frequency of 1. 
+        ## Sorting based on the values and delete the ones with frequency as  1
         ##
-    
-        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], kv[0]))
-    
-        for keys in freqent_itemset_sorted:
-            if freqent_itemset_sorted[keys] == 1:
-                freqent_itemset_sorted.pop(keys)
-            else:
-                break
+
+        #print("fq",freqent_itemset)
+
+        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], kv[0]), reverse = False)
         
+        #print(freqent_itemset_sorted)
+        freqent_itemset_keys = {}
+        i = 0
+        for keys in freqent_itemset_sorted:
+            if keys[1] == 1:
+                freqent_itemset_sorted.pop(i)
+            else:
+                freqent_itemset_keys[keys[0]] = keys[1]
+            i += 1        
+
+        freqent_itemset_keys = OrderedDict(sorted(freqent_itemset_keys.items()))
+        #print(freqent_itemset_keys)
+
         ##
         ## Generation of ordered_frequent_itemset for each transaction
         ##
-    
-        for i in range(0,length - 1):
+        #print(list(freqent_itemset_keys.keys()))
+
+        for i in range(0,length):
             data = dataset[i].item
             ordered_frequent_itemset[dataset[i].t_id] = []
+            for key_frequent in freqent_itemset_keys:
 
-            ##
-            ## Since the 'frequent_itemset_sorted' is sorted we can query the elements from data into
-            ## 'frequent_itemset_sorted' using Binary Search
-            ##
-             
-            # Worse case O(n) 
-            # for keys in freqent_itemset_sorted:
-            #     if keys in data: 
-            #         ordered_frequent_itemset[dataset[i].t_id].append(keys)
-            
-            # Since "frequent_itemset_sorted" is sorted... We can query elements
-            # from 'data' into "ordered_frequent_itemset" using binSearch.
-            # Worse case O(log(n))
-            for keys in freqent_itemset_sorted:
-                key = binSearch(data, keys):
-                    ordered_frequent_itemset[dataset[i].t_id].append(keys)
+                for keys in data:
+                    if key_frequent == keys:
+                        ordered_frequent_itemset[dataset[i].t_id].append(keys)
 
+        print(ordered_frequent_itemset)        
 
+def main():
+    t_1 = horizontalDataset(1,[2,1,5,3,19,20])
+    t_2 = horizontalDataset(2,[2,6,3])
+    t_3 = horizontalDataset(3,[1,7,8])
+    t_4 = horizontalDataset(4,[3,1,9,10])
+    t_5 = horizontalDataset(5,[2,1,11,3,17,18])
+    t_6 = horizontalDataset(6,[2,4,12])
+    t_7 = horizontalDataset(7,[1,13,14])
+    t_8 = horizontalDataset(8,[2,15,4,16])
+
+    dataset = []
+    dataset.append(t_1)
+    dataset.append(t_2)
+    dataset.append(t_3)
+    dataset.append(t_4)
+    dataset.append(t_5)
+    dataset.append(t_6)
+    dataset.append(t_7)
+    dataset.append(t_8)
+    tm = transactionMapping()
+    tm.createTransactionTree(dataset = dataset,length = 8)
+    
 if __name__ == '__main__': 
-    # Testing binSearch method
-    L = [1,2,3,4,5,6,7,8,9,10] 
-    tar1 = 6
-    tar2 = -3
-    bS = transactionMapping()
-    assert bS.binSearch(L, tar1) == 5
-    assert bS.binSearch(L, tar2) == None
-    print("binSearch test cases passed!")
-
+    main()
