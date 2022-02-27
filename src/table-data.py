@@ -54,7 +54,7 @@ def csv_to_data(file_path: str, data_range: list): #data_range - from what to wh
     return data
 
 
-def json_to_tables(file_path: str):
+def json_to_tables(file_path: str) -> TableGroup | Table:
 
     with open(file_path, "r") as f: #Opens JSON file
         json_data = json.load(f) #Converts JSON data to Dictionary
