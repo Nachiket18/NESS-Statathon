@@ -1,16 +1,39 @@
+'''
+
+'''
 import anomaly_detection as anom_detect
 import json
 
 
 class Table:
+    '''
+    A class to compare data points (as floats) to ranges, and return what range it is within.
+
+    entries: dict - A dictionary of ranges that the data will be compared to. Formatted as:
+                    key: (lower bound, upper bound)
+                    When a data point is within a specific range, the key of the matching range is returned.
+                    When one of the bounds is None, the range encompasses all numbers within that direction.
+                    e.g.: (None, 20) = All numbers less than or equal to 20 (or from -infinity to 20).
+    '''
+
 
     def __init__(self, entries: dict):
         self.entries = entries #Allows for entries to be pre-inputted to table w/o using add_entry
 
     def add_entry(self, id, lower_range = None, upper_range = None): #Adds a range to the table
+        '''
+        Adds a new range to the Table class.
+
+        id - What will be returned when a data point is within range
+        lower_range - The lowest bound in the range. When None, it extends to -infinity.
+        upper_range - The highest bound in the range. When None, it extends to infinity.
+        '''
         self.entries[id] = [lower_range, upper_range]
     
     def check_data(self, data: float): #Data - The number you want to check, compare to table ranges
+        '''
+        Checks a data point if it is within one of the stored ranges and returns the key of said range.
+        '''
         data = float(data)
         for i in range(len(self.entries)):  #Checks each range until it finds the matching one
             val = list(self.entries.values())[i] # val[0] - Lower Range, val[1] - Upper Range
@@ -41,7 +64,15 @@ class TableGroup:
 
 
 def csv_to_data(file_path: str, data_range: list): #data_range - from what to what
-    
+    '''
+    A function to convert comma-separated value (CSV) files to a list of numerical data.
+
+    file_path: str - Path to CSV file
+    data_range: list - Range of data in CSV to be extracted and converted. 
+                       Formatted as: (lower bound, upper bound)
+    '''
+
+
     with open(file_path, "r") as f:
 
         data = []
@@ -72,6 +103,10 @@ def discretize_data(data: list, tables: TableGroup):
 
 
 if __name__ == "__main__":
+    help("table_data")
+
+    exit()
+
     x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     x.pop(0)
 
@@ -87,7 +122,7 @@ if __name__ == "__main__":
 
         horiz_ds.append(anom_detect.horizontalDataset(i, dis_dat))
 
-        tM = anom_detect.transactionMapping
+        tM = anom_detect.transactionMapping()
 
         o = tM.createTransactionTree(dataset = horiz_ds, length=len(horiz_ds))
         print(tM)
