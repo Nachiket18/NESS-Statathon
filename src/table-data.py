@@ -70,38 +70,25 @@ def json_to_tables(file_path: str) -> TableGroup | Table:
 def discretize_data(data: list, tables: TableGroup):
     return tables.check_datas(data)
 
+
 if __name__ == "__main__":
     x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     x.pop(0)
 
     tgg = json_to_tables("src/data/tables_test.json")
 
-    test_table = { #Temp.
-        "Low": [None, 20],
-        "Normal": [20, 30],
-        "High": [30, None]
-        }
-    test_table2 = { #Approx. Temp.
-        "Low": [None, 20],
-        "Normal": [20, 30],
-        "High": [30, None]
-        }
-    test_table3 = { #Humidity
-        "Lo-Hu": [0.0, 0.3],
-        "Normal": [0.3, 0.7],
-        "Damp": [0.7, 1]
-        }
 
-    t1 = Table(test_table)
-    t2 = Table(test_table2)
-    t3 = Table(test_table3)
+    horiz_ds = []
+    for i in range(1000):
+        data = x[i][0:3]
+        dis_dat = discretize_data(x[i][0:3], tgg)
+        
+        print(data, dis_dat)
 
-    tg = TableGroup([t1, t2, t3])
+        horiz_ds.append(anom_detect.horizontalDataset(i, dis_dat))
 
-    #for i in range(len(x)):
-    #    print(x[i][0], t.check_data(x[i][0]))
+        tM = anom_detect.transactionMapping
 
-    for i in range(len(x)):
-        print(x[i][0:3], discretize_data(x[i][0:3], tgg))
-        #tg.check_datas(x[i][0:3])
-    #de_ser_data(x,test_table)
+        o = tM.createTransactionTree(tM, dataset = horiz_ds, length=len(horiz_ds))
+        print(tM)
+        print(o)
