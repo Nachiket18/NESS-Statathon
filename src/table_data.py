@@ -1,5 +1,7 @@
 '''
+@author: Rany Kamel (UltraArceus3)
 
+Other Contributors:
 '''
 import anomaly_detection as anom_detect
 import json
@@ -44,14 +46,33 @@ class Table:
                return list(self.entries.keys())[i] #Return corresponding range id
 
 class TableGroup:
+    '''
+    A class to compare a list of data points to a list of corresponding tables simultaneously.
+
+    tables: list - List of Table classes. A list of data points will be compared to a table on the same index.
+    '''
+
 
     def __init__(self, tables: list):
         self.tables = tables #Pre-input tables
 
-    def create_table(self, entries):
+    def create_table(self, entries: dict):
+        '''
+        Creates a new Table class.
+
+        entries: dict - A dictionary of ranges that the data will be compared to. (read Table class docstring for more info.)
+                        It is used to create a new Table class.
+        '''
         self.tables.append(Table(entries)) #Creates new table w/ inputted entries
 
     def check_datas(self, datas: list): #Checks mutliple data points w/ multiple tables
+        '''
+        Checks a list of data points with its corresponding table at the same index and 
+        returns a list of keys of ranges that each data point matched.
+
+        Length of data and length of tables MUST match 
+        as each data point must have a corresponding table.
+        '''
         if len(datas) != len(self.tables): #Data index must match table index, i.e. lens must equal
             raise Exception("Number of data ({}) don't match number of tables ({})!"\
                 .format(len(datas), len(self.tables)))
@@ -85,8 +106,14 @@ def csv_to_data(file_path: str, data_range: list): #data_range - from what to wh
     return data
 
 
-def json_to_tables(file_path: str) -> TableGroup | Table:
+def json_to_tables(file_path: str, return_tablegroup = True) -> TableGroup | Table | list:
+    '''
+    A function to convert JSON files of tables to Table classes.
 
+    file_path: str - Path to JSON file
+    return_tablegroup: bool = True - When the number of tables is greater than 1, should the tables
+                                     be packed into a TableGroup class? (True by default)
+    '''
     with open(file_path, "r") as f: #Opens JSON file
         json_data = json.load(f) #Converts JSON data to Dictionary
         table_data = list(json_data.values()) #Gets Table Data
@@ -95,11 +122,19 @@ def json_to_tables(file_path: str) -> TableGroup | Table:
         for i in table_data:
             tables.append(Table(i)) #Converts Table Data to Table Classes
         
-        return TableGroup(tables) if len(tables) > 1 else tables[0]
-        #Returns TableGroup if there are more than one table, else just a Table gets returned
+        if return_tablegroup:
+            return TableGroup(tables) if len(tables) > 1 else tables[0]
+            #Returns TableGroup if there are more than one table, else just a Table gets returned
+        else:
+            return tables
+        
 
 def discretize_data(data: list, tables: TableGroup):
     return tables.check_datas(data)
+
+
+def process_table():
+    pass
 
 
 if __name__ == "__main__":
