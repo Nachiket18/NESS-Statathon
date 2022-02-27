@@ -93,7 +93,7 @@ class transactionMapping:
 
         #print("fq",freqent_itemset)
 
-        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], kv[0]), reverse = False)
+        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], - kv[0]), reverse = True)
         
         #print(freqent_itemset_sorted)
         freqent_itemset_keys = {}
@@ -105,9 +105,9 @@ class transactionMapping:
                 freqent_itemset_keys[keys[0]] = keys[1]
             i += 1        
 
-        freqent_itemset_keys = OrderedDict(sorted(freqent_itemset_keys.items()))
-        #print(freqent_itemset_keys)
 
+        # freqent_itemset_keys = sorted(freqent_itemset_keys.items(), key = lambda kv:(kv[0]), reverse = False)
+        # print(freqent_itemset_keys)
         ##
         ## Generation of ordered_frequent_itemset for each transaction
         ##
@@ -117,12 +117,13 @@ class transactionMapping:
             data = dataset[i].item
             ordered_frequent_itemset[dataset[i].t_id] = []
             for key_frequent in freqent_itemset_keys:
-
                 for keys in data:
                     if key_frequent == keys:
                         ordered_frequent_itemset[dataset[i].t_id].append(keys)
 
-        print(ordered_frequent_itemset)        
+        print(ordered_frequent_itemset)
+       
+
 
 def main():
     t_1 = horizontalDataset(1,[2,1,5,3,19,20])
