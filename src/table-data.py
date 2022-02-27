@@ -5,7 +5,7 @@ import anomaly_detection as anom_detect
 class Table:
 
     def __init__(self, entries: dict):
-        self.entries = entries #Allows for entries to be pre-imported to table w/o using add_entry
+        self.entries = entries #Allows for entries to be pre-inputted to table w/o using add_entry
 
     def add_entry(self, id, lower_range = None, upper_range = None): #Adds a range to the table
         self.entries[id] = [lower_range, upper_range]
@@ -23,19 +23,19 @@ class Table:
 class TableGroups:
 
     def __init__(self, tables: list):
-        self.tables = tables
+        self.tables = tables #Pre-input tables
 
     def create_table(self, entries):
-        self.tables.append(Table(entries))
+        self.tables.append(Table(entries)) #Creates new table w/ inputted entries
 
-    def check_datas(self, datas: list):
-        if len(datas) != len(self.tables):
+    def check_datas(self, datas: list): #Checks mutliple data points w/ multiple tables
+        if len(datas) != len(self.tables): #Data index must match table index, i.e. lens must equal
             raise Exception("Number of data ({}) don't match number of tables ({})!"\
                 .format(len(datas), len(self.tables)))
 
         dat_ret = []
         for i in range(len(self.tables)):
-            dat_ret.append(self.tables[i].check_data(datas[i]))
+            dat_ret.append(self.tables[i].check_data(datas[i])) #Checks table check_data w/ corresponding data entry
 
         return dat_ret
 
