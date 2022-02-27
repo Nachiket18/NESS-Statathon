@@ -1,3 +1,4 @@
+from msilib.schema import tables
 import anomaly_detection as anom_detect
 
 
@@ -9,7 +10,7 @@ class Table:
     def add_entry(self, id, lower_range = None, upper_range = None): #Adds a range to the table
         self.entries[id] = [lower_range, upper_range]
     
-    def check_data(self, data): #Data - The number you want to check, compare to table ranges
+    def check_data(self, data: float): #Data - The number you want to check, compare to table ranges
         data = float(data)
         for i in range(len(self.entries)):  #Checks each range until it finds the matching one
             val = list(self.entries.values())[i] # val[0] - Lower Range, val[1] - Upper Range
@@ -18,6 +19,28 @@ class Table:
                # (None is when range goes to -inf or inf)
 
                return list(self.entries.keys())[i] #Return corresponding range id
+
+class TableGroups:
+
+    def __init__(self, tables: list):
+        self.tables = tables
+
+    def create_table(self, entries):
+        self.tables.append(Table(entries))
+
+    def check_datas(self, datas: list):
+        if len(datas) != len(self.tables):
+            raise Exception("Number of data ({}) don't match number of tables ({})!"\
+                .format(len(datas), len(self.tables)))
+
+        dat_ret = []
+        for i in range(len(self.tables)):
+            dat_ret.append(self.tables[i].check_data(datas[i]))
+
+        return dat_ret
+
+    
+
 
 def csv_to_data(file_path: str):
     
@@ -39,14 +62,33 @@ def de_ser_data(data: list, tables: list):
 if __name__ == "__main__":
     x = csv_to_data("src/weatherHistory.csv")
     x.pop(0)
-    test_table = {
+
+    test_table = { #Temp.
         "Low": [None, 20],
         "Normal": [20, 30],
         "High": [30, None]
         }
-    t = Table(test_table)
+    test_table2 = { #Approx. Temp.
+        "Low": [None, 20],
+        "Normal": [20, 30],
+        "High": [30, None]
+        }
+    test_table3 = { #Humidity
+        "Lo-Hu": [0.0, 0.3],
+        "Normal": [0.3, 0.7],
+        "Damp": [0.7, 1]
+        }
+
+    t1 = Table(test_table)
+    t2 = Table(test_table2)
+    t3 = Table(test_table3)
+
+    tg = TableGroups([t1, t2, t3])
+
+    #for i in range(len(x)):
+    #    print(x[i][0], t.check_data(x[i][0]))
 
     for i in range(len(x)):
-        print(x[i][0], t.check_data(x[i][0]))
+        print(x[i][0:3], tg.check_datas(x[i][0:3]))
 
     #de_ser_data(x,test_table)
