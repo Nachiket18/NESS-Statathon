@@ -1,0 +1,17 @@
+{
+    "temperature": { 
+        "Low": [null, 20],
+        "Normal": [20, 30],
+        "High": [30, null]
+    },
+    "approx_temp": {
+        "Low": [null, 20],
+        "Normal": [20, 30],
+        "High": [30, null]
+    },
+    "humidity": {
+        "Low-Hum": [0.0, 0.3],
+        "Normal": [0.3, 0.7],
+        "Damp": [0.7, 1]
+        }
+  }

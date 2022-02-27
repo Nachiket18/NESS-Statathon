@@ -1,5 +1,5 @@
-from msilib.schema import tables
 import anomaly_detection as anom_detect
+import json
 
 
 class Table:
@@ -42,26 +42,40 @@ class TableGroups:
     
 
 
-def csv_to_data(file_path: str):
+def csv_to_data(file_path: str, data_range: list): #data_range - from what to what
     
     with open(file_path, "r") as f:
 
         data = []
 
         for i in f.readlines():
-            data.append(i.split(",")[3:11])
+            data.append(i.split(",")[(data_range[0] - 1):data_range[1]])
             # Temperature[3] - App. Temperature[4] - Humidty[5] - Wind Speed[6] - Wind Bearing[7] 
             # Visibility[8] - Loud Cover[9] - Pressure[10]
 
     return data
 
 
-def de_ser_data(data: list, tables: list):
-    pass
+def json_to_tables(file_path: str):
+
+    with open(file_path, "r") as f:
+        json_data = json.load(f)
+        table_data = list(json_data.values())
+
+        tables = []
+        for i in table_data:
+            tables.append(Table(i))
+        
+        return TableGroups(tables) if len(tables) > 1 else tables[0]
+
+def discretize_data(data: list, tables: TableGroups):
+    return tables.check_datas(data)
 
 if __name__ == "__main__":
-    x = csv_to_data("src/weatherHistory.csv")
+    x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     x.pop(0)
+
+    tgg = json_to_tables("src/data/tables_test.json")
 
     test_table = { #Temp.
         "Low": [None, 20],
@@ -89,6 +103,6 @@ if __name__ == "__main__":
     #    print(x[i][0], t.check_data(x[i][0]))
 
     for i in range(len(x)):
-        print(x[i][0:3], tg.check_datas(x[i][0:3]))
-
+        print(x[i][0:3], discretize_data(x[i][0:3], tgg))
+        #tg.check_datas(x[i][0:3])
     #de_ser_data(x,test_table)
