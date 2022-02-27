@@ -20,7 +20,7 @@ class Table:
 
                return list(self.entries.keys())[i] #Return corresponding range id
 
-class TableGroups:
+class TableGroup:
 
     def __init__(self, tables: list):
         self.tables = tables #Pre-input tables
@@ -39,8 +39,6 @@ class TableGroups:
 
         return dat_ret
 
-    
-
 
 def csv_to_data(file_path: str, data_range: list): #data_range - from what to what
     
@@ -58,17 +56,18 @@ def csv_to_data(file_path: str, data_range: list): #data_range - from what to wh
 
 def json_to_tables(file_path: str):
 
-    with open(file_path, "r") as f:
-        json_data = json.load(f)
-        table_data = list(json_data.values())
+    with open(file_path, "r") as f: #Opens JSON file
+        json_data = json.load(f) #Converts JSON data to Dictionary
+        table_data = list(json_data.values()) #Gets Table Data
 
         tables = []
         for i in table_data:
-            tables.append(Table(i))
+            tables.append(Table(i)) #Converts Table Data to Table Classes
         
-        return TableGroups(tables) if len(tables) > 1 else tables[0]
+        return TableGroup(tables) if len(tables) > 1 else tables[0]
+        #Returns TableGroup if there are more than one table, else just a Table gets returned
 
-def discretize_data(data: list, tables: TableGroups):
+def discretize_data(data: list, tables: TableGroup):
     return tables.check_datas(data)
 
 if __name__ == "__main__":
@@ -97,7 +96,7 @@ if __name__ == "__main__":
     t2 = Table(test_table2)
     t3 = Table(test_table3)
 
-    tg = TableGroups([t1, t2, t3])
+    tg = TableGroup([t1, t2, t3])
 
     #for i in range(len(x)):
     #    print(x[i][0], t.check_data(x[i][0]))
