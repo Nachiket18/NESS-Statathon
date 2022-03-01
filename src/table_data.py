@@ -19,8 +19,9 @@ class Table:
     '''
 
 
-    def __init__(self, entries: dict):
+    def __init__(self, entries: dict, keys: list = []):
         self.entries = entries #Allows for entries to be pre-inputted to table w/o using add_entry
+        self.keys = keys
 
     def add_entry(self, id, lower_range = None, upper_range = None): #Adds a range to the table
         '''
@@ -44,6 +45,26 @@ class Table:
                # (None is when range goes to -inf or inf)
 
                return list(self.entries.keys())[i] #Return corresponding range id
+            return [None]
+
+    def is_processed(self) -> bool:
+        return len(self.keys) > 0
+
+    def process_table(self) -> None:
+        if self.is_processed():
+            print(self.keys)
+            return
+
+        entries = self.entries
+        keys = self.keys
+        new_entries = {}
+        entry_keys = list(entries.keys())
+        
+        for i in range(len(entries)):
+            keys.append(entry_keys[i])
+            new_entries[i] = entries[keys[i]]
+
+        self.entries = new_entries
 
 class TableGroup:
     '''
@@ -82,6 +103,11 @@ class TableGroup:
             dat_ret.append(self.tables[i].check_data(datas[i])) #Checks table check_data w/ corresponding data entry
 
         return dat_ret
+
+    def process_all(self) -> None:
+        for i in self.tables:
+            assert isinstance(i, Table)
+            i.process_table()
 
 
 def csv_to_data(file_path: str, data_range: list): #data_range - from what to what
@@ -160,9 +186,15 @@ if __name__ == "__main__":
 
     tgg = json_to_tables("src/data/tables_test.json")
 
-    tbl, ky = process_table(tgg.tables[1])
-    print(tbl.entries)
-    print(ky)
+    #tbl, ky = process_table(tgg.tables[1])
+    #print(tbl.entries)
+    #print(ky)
+
+    tgg.process_all()
+
+    print(
+     [x.entries for x in tgg.tables]   
+    )
 
     exit()
 
