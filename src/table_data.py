@@ -133,32 +133,49 @@ def discretize_data(data: list, tables: TableGroup):
     return tables.check_datas(data)
 
 
-def process_table():
-    pass
+def process_table(table: Table):
+
+    def _replace_key(dict, old_key, new_key) -> None:
+        dict[new_key] = dict[old_key]
+        del dict[old_key]
+
+    table_entries = table.entries.copy()
+    table_keys = list(table_entries.keys())
+    keys = []
+
+    for i in range(len(table_entries)):
+        keys.append(table_keys[i])
+        _replace_key(table_entries, keys[i], i)
+    
+    new_table = Table(table_entries)
+
+    return (new_table, keys)
 
 
 if __name__ == "__main__":
-    help("table_data")
-
-    exit()
+    #help("table_data")
 
     x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     x.pop(0)
 
     tgg = json_to_tables("src/data/tables_test.json")
 
+    tbl, ky = process_table(tgg.tables[1])
+    print(tbl.entries)
+    print(ky)
+
+    exit()
 
     horiz_ds = []
-    for i in range(1000):
+    for i in range(1):
         data = x[i][0:3]
         dis_dat = discretize_data(x[i][0:3], tgg)
         
-        print(data, dis_dat)
+        #print(data, dis_dat)
 
         horiz_ds.append(anom_detect.horizontalDataset(i, dis_dat))
 
         tM = anom_detect.transactionMapping()
 
-        o = tM.createTransactionTree(dataset = horiz_ds, length=len(horiz_ds))
+        tM.createTransactionTree(dataset = horiz_ds, length=len(horiz_ds))
         print(tM)
-        print(o)
