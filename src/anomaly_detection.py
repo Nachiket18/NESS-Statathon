@@ -3,17 +3,13 @@ Created on 17-Feb-2022
 
 @author: Nachiket Deo
 '''
-import copy
+
 
 # class items:
 #     itemset = []
 #     no_items = int()
 
 from collections import OrderedDict
-from logging import root
-import queue
-
-from nbformat import current_nbformat
 
 class horizontalDataset:
     t_id = int()
@@ -24,56 +20,30 @@ class horizontalDataset:
         self.item = item
          
 
-class TreeNode:
+class transactionTree:
     
-    def __init__(self,item_id, item_count,children,interval_start = None,interval_end = None,parent=None):
+    item_id = int()
+    item_count = int()
+    interval_start = int()
+    interval_end = int()
+    children = []
+    
+    def __init__(self, item_id, item_count,interval_start,interval_end,children):
         self.item_id = item_id
         self.item_count = item_count
         self.interval_start = interval_start
         self.interval_end = interval_end
         self.children = children
-        
 
-    def add_child(self, data):
-        #assert isinstance(node, TreeNode)
-        new_node = TreeNode(item_id=data,item_count=1,children = {})
-        self.children[data] = new_node
-        
-    def incrementCount(self):
-        self.item_count += 1        
-        
-    def findChild(self,data):
-        return self.children[data]
-    
-    
+    def add_child(self, obj):
+        self.children.append(obj)
+
+
 class transactionMapping:
     
     def __init__(self):
         pass
 
-    def buildSubTree(self,node:TreeNode,value,i:int):
-        print("Node:",node.item_id,node.item_count,node.children.keys())
-
-        if i <= (len(value) - 1):
-            
-            if value[i] in node.children.keys():
-               node.children[value[i]].incrementCount()
-               
-               child = node.findChild(value[i])
-               self.buildSubTree(child,value,i+1)
-                 
-            else:
-                node.add_child(value[i])
-                print("Child-Added",node.item_id,node.children[value[i]].item_id)
-                child = node.findChild(value[i])
-                self.buildSubTree(child,value,i+1)
-        else:
-            return
-        return
-
-
-             
-    
     def binSearch(self, arr, target): 
         left = 0 
         right = len(arr) - 1
@@ -95,36 +65,6 @@ class transactionMapping:
 
         return None
 
-    def printSubTree(self,node:TreeNode):
-        
-        q = []  # Create a queue
-        q.append(node)
-
-        print("In")
-        while(len(q) != 0):
-            
-            n = len(q)
-  
-            # If this node has children
-            while (n > 0):
-         
-                # Dequeue an item from queue and print it
-                p = q[0]
-                q.pop(0)
-                print(p.item_id, p.item_count)
-   
-                # Enqueue all children of the dequeued item
-                for key,value in p.children.items():
-                    q.append(p.children[key])
-                n -= 1
-   
-            print()
-
-
-
-
-
-
     def createTransactionTree(self,dataset:list,length:int):
 
 
@@ -132,7 +72,7 @@ class transactionMapping:
         freqent_itemset = {}
         ordered_frequent_itemset = {}
 
-        
+        root = transactionTree(0,0,0,0,[])
         
         ##
         ## Scan 1 
@@ -153,7 +93,7 @@ class transactionMapping:
 
         #print("fq",freqent_itemset)
 
-        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], - kv[0]), reverse = True)
+        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], kv[0]), reverse = False)
         
         #print(freqent_itemset_sorted)
         freqent_itemset_keys = {}
@@ -165,9 +105,9 @@ class transactionMapping:
                 freqent_itemset_keys[keys[0]] = keys[1]
             i += 1        
 
+        freqent_itemset_keys = OrderedDict(sorted(freqent_itemset_keys.items()))
+        #print(freqent_itemset_keys)
 
-        # freqent_itemset_keys = sorted(freqent_itemset_keys.items(), key = lambda kv:(kv[0]), reverse = False)
-        # print(freqent_itemset_keys)
         ##
         ## Generation of ordered_frequent_itemset for each transaction
         ##
@@ -177,38 +117,12 @@ class transactionMapping:
             data = dataset[i].item
             ordered_frequent_itemset[dataset[i].t_id] = []
             for key_frequent in freqent_itemset_keys:
+
                 for keys in data:
                     if key_frequent == keys:
                         ordered_frequent_itemset[dataset[i].t_id].append(keys)
 
-        print(ordered_frequent_itemset)
-
-        root = TreeNode(None,None,{})
-        #current_node = copy.copy(root)
-        for key,value in ordered_frequent_itemset.items():
-            self.buildSubTree(root,value,0)
-        
-        self.printSubTree(root)
-        
-            
-        # print("The Root data")
-        # for child in root.children:
-        #     print(child.item_id,child.item_count)
-
-
-
-
-        # print('Root',tr.root.item_id)
-        # for ch in tr.root.children:
-        #      print(ch.item_id,ch.item_count)
-        #      for ch_nest in ch.children:
-        #          print("Nested",ch.item_id,ch_nest.item_id)
-        
-        #visited = BFS(tr)
-        #print(visited)
-
-
-
+        print(ordered_frequent_itemset)        
 
 def main():
     t_1 = horizontalDataset(1,[2,1,5,3,19,20])
