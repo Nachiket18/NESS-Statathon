@@ -6,5 +6,8 @@
 # it wants to stop the commit.
 #
 # To enable this hook, rename this file to "pre-commit".
+if [ ! -d ".env" ]; then
+ python3 -m venv .env
+fi
 . .env/bin/activate
 black .
