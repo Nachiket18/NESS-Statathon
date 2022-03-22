@@ -3,7 +3,7 @@
 
 Other Contributors:
 '''
-import anomaly_detection as anom_detect
+#import anomaly_detection as anom_detect
 import json
 
 
@@ -55,16 +55,21 @@ class Table:
             print(self.keys)
             return
 
-        entries = self.entries
-        keys = self.keys
-        new_entries = {}
-        entry_keys = list(entries.keys())
+        #self = process_table(self)
         
-        for i in range(len(entries)):
-            keys.append(entry_keys[i])
-            new_entries[i] = entries[keys[i]]
+        self.__dict__.update(process_table(self).__dict__)
 
-        self.entries = new_entries
+        #print(self.entries)
+        #print(self.keys)
+        
+        # new_entries = {}
+        # entry_keys = list(self.entries.keys())
+        
+        # for i in range(len(self.entries)):
+        #     self.keys.append(entry_keys[i])
+        #     new_entries[i] = self.entries[self.keys[i]]
+
+        # self.entries = new_entries
 
 class TableGroup:
     '''
@@ -159,7 +164,7 @@ def discretize_data(data: list, tables: TableGroup):
     return tables.check_datas(data)
 
 
-def process_table(table: Table):
+def process_table(table: Table) -> Table:
 
     def _replace_key(dict, old_key, new_key) -> None:
         dict[new_key] = dict[old_key]
@@ -173,9 +178,9 @@ def process_table(table: Table):
         keys.append(table_keys[i])
         _replace_key(table_entries, keys[i], i)
     
-    new_table = Table(table_entries)
+    new_table = Table(table_entries, keys)
 
-    return (new_table, keys)
+    return new_table
 
 
 if __name__ == "__main__":
@@ -185,15 +190,25 @@ if __name__ == "__main__":
     x.pop(0)
 
     tgg = json_to_tables("src/data/tables_test.json")
+    #tga = json_to_tables("src/data/tables_test.json", False)
 
     #tbl, ky = process_table(tgg.tables[1])
     #print(tbl.entries)
     #print(ky)
 
-    tgg.process_all()
+    #tgg[2].process_table()
+    #tga[1].process_table()
+    #tgg[2].process_table()
+
+    #tgg.tables[2] = process_table(tgg.tables[2])
+    #tgg.tables[1].process_table()
+    #tgg.tables[0].process_table()
+    #tgg.tables[2].process_table()
+    [x.process_table() for x in tgg.tables]
+    #tgg.process_all()
 
     print(
-     [x.entries for x in tgg.tables]   
+        [x.entries for x in tgg.tables]
     )
 
     exit()
