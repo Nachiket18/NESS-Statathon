@@ -3,7 +3,7 @@
 
 Other Contributors:
 '''
-#import anomaly_detection as anom_detect
+import anomaly_detection as anom_detect
 import json
 
 
@@ -48,28 +48,22 @@ class Table:
             return [None]
 
     def is_processed(self) -> bool:
+        '''
+        Checks if the data has been processed (if the keys had been separated from the dictionary).
+        '''
         return len(self.keys) > 0
 
     def process_table(self) -> None:
+        '''
+        Separates the keys from the table, moving them into self.keys as a list and leaving 
+        self.entries with 0, 1, 2, ... len(self.entries)-1 as the dictionary keys.
+        '''
         if self.is_processed():
-            print(self.keys)
+            #print(self.keys)
             return
-
-        #self = process_table(self)
         
         self.__dict__.update(process_table(self).__dict__)
 
-        #print(self.entries)
-        #print(self.keys)
-        
-        # new_entries = {}
-        # entry_keys = list(self.entries.keys())
-        
-        # for i in range(len(self.entries)):
-        #     self.keys.append(entry_keys[i])
-        #     new_entries[i] = self.entries[self.keys[i]]
-
-        # self.entries = new_entries
 
 class TableGroup:
     '''
@@ -184,31 +178,16 @@ def process_table(table: Table) -> Table:
 
 
 if __name__ == "__main__":
-    #help("table_data")
 
     x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     x.pop(0)
 
     tgg = json_to_tables("src/data/tables_test.json")
-    #tga = json_to_tables("src/data/tables_test.json", False)
-
-    #tbl, ky = process_table(tgg.tables[1])
-    #print(tbl.entries)
-    #print(ky)
-
-    #tgg[2].process_table()
-    #tga[1].process_table()
-    #tgg[2].process_table()
-
-    #tgg.tables[2] = process_table(tgg.tables[2])
-    #tgg.tables[1].process_table()
-    #tgg.tables[0].process_table()
-    #tgg.tables[2].process_table()
-    [x.process_table() for x in tgg.tables]
-    #tgg.process_all()
+    tgg.process_all()
 
     print(
-        [x.entries for x in tgg.tables]
+        [x.entries for x in tgg.tables],
+        [x.keys for x in tgg.tables]
     )
 
     exit()
