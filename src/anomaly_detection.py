@@ -71,6 +71,43 @@ class transactionMapping:
             return
         return
 
+<<<<<<< Updated upstream
+=======
+    def constructIntervalLists(self,node:TreeNode):
+
+        queue = []  # Create a queue
+        queue.append(node)
+
+        while(len(queue) != 0):
+
+            node_t = queue[0]
+            queue.pop(0)
+            i = 0
+            
+            
+            for key, value in node_t.children.items():
+                i +=1
+                print(value.item_id,value.item_count,node_t.item_count,node_t.item_id,node_t.interval_start)
+                queue.append(value)
+                if i == 1:
+                    s_1 = node_t.interval_start        
+                    e_1 = (s_1 + value.item_count) - 1
+                    value.interval_start = s_1
+                    value.interval_end = e_1
+                    e_i_prime = e_1
+                else:
+                    s_i = e_i_prime + 1
+                    e_i = (s_i + value.item_count) - 1
+                    value.interval_start = s_i
+                    value.interval_end = e_i
+                    e_i_prime = e_i
+                    
+
+
+
+
+
+>>>>>>> Stashed changes
 
              
     
@@ -111,7 +148,11 @@ class transactionMapping:
                 # Dequeue an item from queue and print it
                 p = q[0]
                 q.pop(0)
+<<<<<<< Updated upstream
                 print(p.item_id, p.item_count)
+=======
+                print(p.item_id, p.item_count,p.interval_start,p.interval_end)
+>>>>>>> Stashed changes
    
                 # Enqueue all children of the dequeued item
                 for key,value in p.children.items():
@@ -183,13 +224,29 @@ class transactionMapping:
 
         print(ordered_frequent_itemset)
 
+<<<<<<< Updated upstream
         root = TreeNode(None,None,{})
+=======
+        root = TreeNode(None,None,{},interval_start = 1)
+>>>>>>> Stashed changes
         #current_node = copy.copy(root)
         for key,value in ordered_frequent_itemset.items():
             self.buildSubTree(root,value,0)
         
+<<<<<<< Updated upstream
         self.printSubTree(root)
         
+=======
+        #self.printSubTree(root)
+        
+        ##
+        ## Construction on Interval Lists
+        ##
+
+        self.constructIntervalLists(root)
+
+        #self.printSubTree(root)
+>>>>>>> Stashed changes
             
         # print("The Root data")
         # for child in root.children:
