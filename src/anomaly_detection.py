@@ -71,8 +71,6 @@ class transactionMapping:
             return
         return
 
-<<<<<<< Updated upstream
-=======
     def constructIntervalLists(self,node:TreeNode):
 
         queue = []  # Create a queue
@@ -102,13 +100,6 @@ class transactionMapping:
                     value.interval_end = e_i
                     e_i_prime = e_i
                     
-
-
-
-
-
->>>>>>> Stashed changes
-
              
     
     def binSearch(self, arr, target): 
@@ -148,11 +139,7 @@ class transactionMapping:
                 # Dequeue an item from queue and print it
                 p = q[0]
                 q.pop(0)
-<<<<<<< Updated upstream
-                print(p.item_id, p.item_count)
-=======
                 print(p.item_id, p.item_count,p.interval_start,p.interval_end)
->>>>>>> Stashed changes
    
                 # Enqueue all children of the dequeued item
                 for key,value in p.children.items():
@@ -160,9 +147,6 @@ class transactionMapping:
                 n -= 1
    
             print()
-
-
-
 
 
 
@@ -224,19 +208,15 @@ class transactionMapping:
 
         print(ordered_frequent_itemset)
 
-<<<<<<< Updated upstream
-        root = TreeNode(None,None,{})
-=======
+
         root = TreeNode(None,None,{},interval_start = 1)
->>>>>>> Stashed changes
         #current_node = copy.copy(root)
         for key,value in ordered_frequent_itemset.items():
             self.buildSubTree(root,value,0)
         
-<<<<<<< Updated upstream
+
         self.printSubTree(root)
         
-=======
         #self.printSubTree(root)
         
         ##
@@ -245,8 +225,7 @@ class transactionMapping:
 
         self.constructIntervalLists(root)
 
-        #self.printSubTree(root)
->>>>>>> Stashed changes
+ 
             
         # print("The Root data")
         # for child in root.children:
