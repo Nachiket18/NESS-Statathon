@@ -128,8 +128,7 @@ class transactionMapping:
                     value.interval_end = e_i
                     e_i_prime = e_i
                     
-    def constructLexicographicTree():
-
+             
     
     def binSearch(self, arr, target): 
         left = 0 
@@ -246,6 +245,7 @@ class transactionMapping:
 
         self.printSubTree(root)
         
+        #self.printSubTree(root)
         
         ##
         ## Construction on Interval Lists
