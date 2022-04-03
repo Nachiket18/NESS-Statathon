@@ -1,60 +1,42 @@
-class LexiVertex:
-    def __init__(self, key):
-        self.data = []
-        self.connectedTo = {}
+class LexicoNode:
+    def __init__(self, data: list, children: dict):
+        self.data = data
+        self.children = children
+
+    def has_children(self):
+        return len(self.children) > 0
+
+    def add_node(self, edge, node):
+        self.children[edge] = node
+
+    def print_out(self, depth = 0):
+        def _indent(x):
+            return "\t" * x
         
-    def addNeighbor(self, nbr, dep_object = ''):
-        self.connectedTo[nbr] = dep_object
+        print(_indent(depth), self.data)
+        
+        if self.has_children():
+            for i in self.children:
+                print("\n", _indent(depth + 1), "---", i)
+                self.children[i].print_out(depth + 1)
 
-    def __str__(self):
-        return str(self.id) + ' connectedTo: ' + str([x.id for x in self.connectedTo])
+        
 
-    def getConnections(self):
-        return self.connectedTo.keys()
-
-    def getData(self):
-        return self.data
-
-    def getWeight(self, nbr):
-        return self.connectedTo[nbr]
-
-class LexicographicTree:
-    def __init__(self):
-        self.vertList = {}
-        self.numVertices = 0
-
-    def addVertex(self, key):
-        self.numVertices = self.numVertices + 1
-        newVertex = LexiVertex(key)
-        self.vertList[key] = newVertex
-        return newVertex
-
-    def getVertex(self, n):
-        if n in self.vertList:
-            return self.vertList[n]
-        else:
-            return None
-
-    def __contains__(self, n):
-        return n in self.vertList
-
-    def addEdge(self, f, t, dep_object=''):
-        if f not in self.vertList:
-            nv = self.addVertex(f)
-        if t not in self.vertList:
-            nv = self.addVertex(t)
-        self.vertList[f].addNeighbor(self.vertList[t], dep_object)
-
-    def getVertices(self):
-        return self.vertList.keys()
-
-    def __iter__(self):
-        return iter(self.vertList.values())
 
 
 if __name__ == "__main__":
-    lex = LexicographicTree()
+    lex = LexicoNode([2, 3, 5, 20], {0: LexicoNode([69], {})})
 
-    lex.addVertex(10)
+    #lex2 = LexicoNode()
 
+    lex.add_node(4, LexicoNode([10, 23, 34], {1: LexicoNode([50], {})}))
+    lex.add_node(6, LexicoNode([10, 23, 34], {1: LexicoNode([50], {})}))
     print(lex.__dict__)
+
+    print(lex.print_out())
+
+    #lex = LexicographicTree()
+
+    #lex.addVertex(10)
+
+    #print(lex.__dict__)
