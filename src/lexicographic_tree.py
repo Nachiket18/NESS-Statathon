@@ -1,10 +1,9 @@
 class LexiVertex:
-    def __init__(self,key):
+    def __init__(self, key):
         self.data = []
         self.connectedTo = {}
         
-
-    def addNeighbor(self,nbr,dep_object = ''):
+    def addNeighbor(self, nbr, dep_object = ''):
         self.connectedTo[nbr] = dep_object
 
     def __str__(self):
@@ -16,7 +15,7 @@ class LexiVertex:
     def getData(self):
         return self.data
 
-    def getWeight(self,nbr):
+    def getWeight(self, nbr):
         return self.connectedTo[nbr]
 
 class LexicographicTree:
@@ -24,31 +23,38 @@ class LexicographicTree:
         self.vertList = {}
         self.numVertices = 0
 
-    def addVertex(self,key):
+    def addVertex(self, key):
         self.numVertices = self.numVertices + 1
         newVertex = LexiVertex(key)
         self.vertList[key] = newVertex
         return newVertex
 
-    def getVertex(self,n):
+    def getVertex(self, n):
         if n in self.vertList:
             return self.vertList[n]
         else:
             return None
 
-    def __contains__(self,n):
+    def __contains__(self, n):
         return n in self.vertList
 
-    def addEdge(self,f,t,dep_object=''):
+    def addEdge(self, f, t, dep_object=''):
         if f not in self.vertList:
             nv = self.addVertex(f)
         if t not in self.vertList:
             nv = self.addVertex(t)
         self.vertList[f].addNeighbor(self.vertList[t], dep_object)
 
-
     def getVertices(self):
         return self.vertList.keys()
 
     def __iter__(self):
         return iter(self.vertList.values())
+
+
+if __name__ == "__main__":
+    lex = LexicographicTree()
+
+    lex.addVertex(10)
+
+    print(lex.__dict__)
