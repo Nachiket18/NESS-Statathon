@@ -3,7 +3,6 @@ Created on 17-Feb-2022
 
 @author: Nachiket Deo
 '''
-import copy
 
 # class items:
 #     itemset = []
