@@ -63,6 +63,8 @@ class Table:
             return
         
         self.__dict__.update(process_table(self).__dict__)
+        #Takes the __dict__ of the table generated in process_table, and overrides
+        #its __dict__ with the new table's, effectively changing it to the new table.
 
 
 class TableGroup:
