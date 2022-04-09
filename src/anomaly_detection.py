@@ -12,8 +12,8 @@ import copy
 from collections import OrderedDict
 from logging import root
 import queue
-
 from nbformat import current_nbformat
+from lexicographic_tree import LexicographicTree
 
 class horizontalDataset:
     t_id = int()
@@ -45,7 +45,35 @@ class TreeNode:
     def findChild(self,data):
         return self.children[data]
     
-    
+    def DFS_interval_list_intersection(node,findItem):
+        
+
+    def searchNodeBFS(self,root,searchItem,searchChildren):
+        
+        q = queue.Queue()
+        visited = []
+
+        #print(source.getId())
+        q.put(root)
+
+        visited.append(root.item_id)
+
+        #print("visited",visited)
+
+        while( q.empty() == False):
+            v = q.get()
+            if v.item_id == searchItem:
+
+                
+
+            for nbr in v.getConnections():
+                if nbr.getId() not in visited:
+                    q.put(nbr)
+                    visited.append(nbr.getId())
+
+        return visited
+
+
 class transactionMapping:
     
     def __init__(self):
@@ -100,7 +128,8 @@ class transactionMapping:
                     value.interval_end = e_i
                     e_i_prime = e_i
                     
-             
+    def constructLexicographicTree():
+
     
     def binSearch(self, arr, target): 
         left = 0 
@@ -217,7 +246,6 @@ class transactionMapping:
 
         self.printSubTree(root)
         
-        #self.printSubTree(root)
         
         ##
         ## Construction on Interval Lists
@@ -225,23 +253,21 @@ class transactionMapping:
 
         self.constructIntervalLists(root)
 
- 
+        return root,freqent_itemset_keys
+    
+    def constructLexicographicTree(root:TreeNode,freqent_itemset_keys:dict):
+
+        lex = LexicoNode(freqent_itemset_keys.keys(), {})
+
+        for i in range(0,len(lex.data)):
+            lex.data[i]   
             
-        # print("The Root data")
-        # for child in root.children:
-        #     print(child.item_id,child.item_count)
 
 
 
 
-        # print('Root',tr.root.item_id)
-        # for ch in tr.root.children:
-        #      print(ch.item_id,ch.item_count)
-        #      for ch_nest in ch.children:
-        #          print("Nested",ch.item_id,ch_nest.item_id)
-        
-        #visited = BFS(tr)
-        #print(visited)
+            
+       
 
 
 
