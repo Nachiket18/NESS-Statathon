@@ -8,6 +8,11 @@ Created on 17-Feb-2022
 #     itemset = []
 #     no_items = int()
 
+from dataclasses import dataclass
+import queue
+from typing import Any, Dict, List, Optional
+from lexicographic_tree import LexicoNode
+
 
 class horizontalDataset:
     t_id = int()
@@ -18,32 +23,98 @@ class horizontalDataset:
         self.item = item
 
 
-class TreeNode:
-    def __init__(
-        self,
-        item_id,
-        item_count,
-        children,
-        interval_start=None,
-        interval_end=None,
-        parent=None,
-    ):
-        self.item_id = item_id
-        self.item_count = item_count
-        self.interval_start = interval_start
-        self.interval_end = interval_end
-        self.children = children
+# class TreeNode:
+#     def __init__(
+#         self,
+#         item_id,
+#         item_count,
+#         children,
+#         interval_start=None,
+#         interval_end=None,
+#         parent=None,
+#     ):
+#         self.item_id = item_id
+#         self.item_count = item_count
+#         self.interval_start = interval_start
+#         self.interval_end = interval_end
+#         self.children = children
 
-    def add_child(self, data):
+# def add_child(self, data):
+#     # assert isinstance(node, TreeNode)
+#     new_node = TreeNode(item_id=data, item_count=1, children={})
+#     self.children[data] = new_node
+
+# def incrementCount(self):
+#     self.item_count += 1
+
+#     def findChild(self, data):
+#         return self.children[data]
+
+#     def DFS_interval_list_intersection(node,findItem):
+
+
+#     def searchNodeBFS(self,root,searchItem,searchChildren):
+
+#         q = queue.Queue()
+#         visited = []
+
+#         #print(source.getId())
+#         q.put(root)
+
+#         visited.append(root.item_id)
+
+#         #print("visited",visited)
+
+#         while( q.empty() == False):
+#             v = q.get()
+#             if v.item_id == searchItem:
+
+
+#             for nbr in v.getConnections():
+#                 if nbr.getId() not in visited:
+#                     q.put(nbr)
+#                     visited.append(nbr.getId())
+
+#         return visited
+@dataclass
+class TreeNode:
+    item_id: int
+    item_count: int
+    children: Dict[int, object]
+    interval_start: Optional[int] = None
+    interval_end: Optional[int] = None
+
+    def add_child(self, data: int):
         # assert isinstance(node, TreeNode)
         new_node = TreeNode(item_id=data, item_count=1, children={})
         self.children[data] = new_node
 
+    def findChild(self, data):
+        return self.children[data]
+
     def incrementCount(self):
         self.item_count += 1
 
-    def findChild(self, data):
-        return self.children[data]
+    def searchNodeBFS(self, root, searchItem, searchChildren):
+        q = queue.Queue()
+        visited = []
+
+        # print(source.getId())
+        q.put(root)
+
+        visited.append(root.item_id)
+
+        # print("visited",visited)
+
+        while q.empty() == False:
+            v = q.get()
+            if v.item_id == searchItem:
+                for nbr in v.getConnections():
+                    if nbr.getId() not in visited:
+                        q.put(nbr)
+                        visited.append(nbr.getId())
+
+        return visited
 
 
 class transactionMapping:
@@ -220,15 +291,14 @@ class transactionMapping:
 
         self.constructIntervalLists(root)
 
-        # print("The Root data")
-        # for child in root.children:
-        #     print(child.item_id,child.item_count)
+        return root, freqent_itemset_keys
 
-        # print('Root',tr.root.item_id)
-        # for ch in tr.root.children:
-        #      print(ch.item_id,ch.item_count)
-        #      for ch_nest in ch.children:
-        #          print("Nested",ch.item_id,ch_nest.item_id)
+    def constructLexicographicTree(root: TreeNode, freqent_itemset_keys: dict):
+
+        lex = LexicoNode(freqent_itemset_keys.keys(), {})
+
+        for i in range(0, len(lex.data)):
+            lex.data[i]
 
         # visited = BFS(tr)
         # print(visited)
