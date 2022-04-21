@@ -8,3 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
+        with:
+          options: "--verbose"
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v18.7
+        with:
+          files: |
+            *.py
+      - name: Commit
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions-x/commit@v5
+        with:
+          name: github-actions
+          message: Format Files with Black
