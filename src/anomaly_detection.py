@@ -14,13 +14,17 @@ from typing import Any, Dict, List, Optional
 from lexicographic_tree import LexicoNode
 
 
-class horizontalDataset:
-    t_id = int()
-    item = []
+# class horizontalDataset:
+#     t_id = int()
+#     item = []
 
-    def __init__(self, t_id, item):
-        self.t_id = t_id
-        self.item = item
+#     def __init__(self, t_id, item):
+#         self.t_id = t_id
+#         self.item = item
+@dataclass
+class horizontalDataset:
+    t_id: int
+    item: List[Any]
 
 
 # class TreeNode:
@@ -137,13 +141,10 @@ class transactionMapping:
                 print("Child-Added", node.item_id, node.children[value[i]].item_id)
                 child = node.findChild(value[i])
                 self.buildSubTree(child, value, i + 1)
-        else:
-            return
-        return
 
     def constructIntervalLists(self, node: TreeNode):
 
-        queue = []  # Create a queue
+        queue: List[TreeNode] = []  # Create a queue
         queue.append(node)
 
         while len(queue) != 0:
@@ -152,7 +153,7 @@ class transactionMapping:
             queue.pop(0)
             i = 0
 
-            for key, value in node_t.children.items():
+            for _, value in node_t.children.items():
                 i += 1
                 print(
                     value.item_id,
@@ -209,7 +210,7 @@ class transactionMapping:
             # If this node has children
             while n > 0:
 
-                # Dequeue an item from queue and print it
+                # Dequeue an item from queue andAuto stash before rebase of "main" print it
                 p = q[0]
                 q.pop(0)
                 print(p.item_id, p.item_count, p.interval_start, p.interval_end)
@@ -233,7 +234,7 @@ class transactionMapping:
 
         for i in range(0, length):
             data = dataset[i].item
-            for j in range(0, len(data)):
+            for j, _ in enumerate(data):
                 if data[j] in freqent_itemset:
                     freqent_itemset[data[j]] += 1
                 else:
