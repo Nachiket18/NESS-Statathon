@@ -1,61 +1,60 @@
-'''
+"""
 Created on 17-Feb-2022
 
 @author: Nachiket Deo
-'''
-import copy
+"""
+
+# class items:
+#     itemset = []
+#     no_items = int()
+
+from dataclasses import dataclass
 import queue
-from nbformat import current_nbformat
+from typing import Any, Dict, List, Optional
 from lexicographic_tree import LexicoNode
+
 
 class horizontalDataset:
     t_id = int()
     item = []
-    
+
     def __init__(self, t_id, item):
         self.t_id = t_id
         self.item = item
-         
 
+@dataclass
 class TreeNode:
-    
-    def __init__(self,item_id, item_count,children,interval_start = None,interval_end = None,parent=None):
-        self.item_id = item_id
-        self.item_count = item_count
-        self.interval_start = interval_start
-        self.interval_end = interval_end
-        self.children = children
-        
+    item_id: int
+    item_count: int
+    children: Dict[int, object]
+    interval_start: Optional[int] = None
+    interval_end: Optional[int] = None
 
-    def add_child(self, data):
-        #assert isinstance(node, TreeNode)
-        new_node = TreeNode(item_id=data,item_count=1,children = {})
+    def add_child(self, data: int):
+        # assert isinstance(node, TreeNode)
+        new_node = TreeNode(item_id=data, item_count=1, children={})
         self.children[data] = new_node
-        
-    def incrementCount(self):
-        self.item_count += 1        
-        
-    def findChild(self,data):
-        return self.children[data]
-    
-        
-    ##
-    ## To locate a node with specified item_id in the Transaction Tree
-    ##
 
-    def searchNodeBFS(self,searchItem,searchChildren):
-        
-        output_interval_range = []
-        output_searchItemRange = []
+    def findChild(self, data):
+        return self.children[data]
+
+    def incrementCount(self):
+        self.item_count += 1
+
+    def searchNodeBFS(self, root, searchItem, searchChildren):
         q = queue.Queue()
         visited = []
+        output_interval_range = []
+        output_searchItemRange = []
 
-        #print(source.getId())
-        q.put(self)
+        # print(source.getId())
+        q.put(root)
 
-        visited.append(self.item_id)
+        visited.append(root.item_id)
 
-        while( q.empty() == False):
+        # print("visited",visited)
+
+        while q.empty() == False:
             v = q.get()
 
             if v.item_id == searchItem:
@@ -90,48 +89,52 @@ class TreeNode:
 
 
 class transactionMapping:
-    
     def __init__(self):
         pass
 
-    def buildSubTree(self,node:TreeNode,value,i:int):
-        print("Node:",node.item_id,node.item_count,node.children.keys())
+    def buildSubTree(self, node: TreeNode, value, i: int):
+        print("Node:", node.item_id, node.item_count, node.children.keys())
 
         if i <= (len(value) - 1):
-            
+
             if value[i] in node.children.keys():
-               node.children[value[i]].incrementCount()
-               
-               child = node.findChild(value[i])
-               self.buildSubTree(child,value,i+1)
-                 
+                node.children[value[i]].incrementCount()
+
+                child = node.findChild(value[i])
+                self.buildSubTree(child, value, i + 1)
+
             else:
                 node.add_child(value[i])
-                print("Child-Added",node.item_id,node.children[value[i]].item_id)
+                print("Child-Added", node.item_id, node.children[value[i]].item_id)
                 child = node.findChild(value[i])
-                self.buildSubTree(child,value,i+1)
+                self.buildSubTree(child, value, i + 1)
         else:
             return
         return
 
-    def constructIntervalLists(self,node:TreeNode):
+    def constructIntervalLists(self, node: TreeNode):
 
         queue = []  # Create a queue
         queue.append(node)
 
-        while(len(queue) != 0):
+        while len(queue) != 0:
 
             node_t = queue[0]
             queue.pop(0)
             i = 0
-            
-            
+
             for key, value in node_t.children.items():
-                i +=1
-                print(value.item_id,value.item_count,node_t.item_count,node_t.item_id,node_t.interval_start)
+                i += 1
+                print(
+                    value.item_id,
+                    value.item_count,
+                    node_t.item_count,
+                    node_t.item_id,
+                    node_t.interval_start,
+                )
                 queue.append(value)
                 if i == 1:
-                    s_1 = node_t.interval_start        
+                    s_1 = node_t.interval_start
                     e_1 = (s_1 + value.item_count) - 1
                     value.interval_start = s_1
                     value.interval_end = e_1
@@ -150,58 +153,54 @@ class transactionMapping:
         q.append(node)
 
         print("In")
-        while(len(q) != 0):
-            
+        while len(q) != 0:
+
             n = len(q)
-  
+
             # If this node has children
-            while (n > 0):
-         
+            while n > 0:
+
                 # Dequeue an item from queue and print it
                 p = q[0]
                 q.pop(0)
-                print(p.item_id, p.item_count,p.interval_start,p.interval_end)
-   
+                print(p.item_id, p.item_count, p.interval_start, p.interval_end)
+
                 # Enqueue all children of the dequeued item
-                for key,value in p.children.items():
+                for key, value in p.children.items():
                     q.append(p.children[key])
                 n -= 1
-   
+
             print()
 
-
-
-    def createTransactionTree(self,dataset:list,length:int):
-
-
+    def createTransactionTree(self, dataset: list, length: int):
 
         freqent_itemset = {}
         ordered_frequent_itemset = {}
 
-        
-        
         ##
-        ## Scan 1 
+        ## Scan 1
         ## Collecting the set of 1-frequent items F and their supports.
         ##
-    
-        for i in range(0,length):
+
+        for i in range(0, length):
             data = dataset[i].item
-            for j in range(0,len(data)):
+            for j in range(0, len(data)):
                 if data[j] in freqent_itemset:
-                    freqent_itemset[data[j]] +=1
+                    freqent_itemset[data[j]] += 1
                 else:
                     freqent_itemset[data[j]] = 1
-        
+
         ##
         ## Sorting based on the values and delete the ones with frequency as  1
         ##
 
-        #print("fq",freqent_itemset)
+        # print("fq",freqent_itemset)
 
-        freqent_itemset_sorted = sorted(freqent_itemset.items(), key = lambda kv:(kv[1], - kv[0]), reverse = True)
-        
-        #print(freqent_itemset_sorted)
+        freqent_itemset_sorted = sorted(
+            freqent_itemset.items(), key=lambda kv: (kv[1], -kv[0]), reverse=True
+        )
+
+        # print(freqent_itemset_sorted)
         freqent_itemset_keys = {}
         i = 0
         for keys in freqent_itemset_sorted:
@@ -209,16 +208,16 @@ class transactionMapping:
                 freqent_itemset_sorted.pop(i)
             else:
                 freqent_itemset_keys[keys[0]] = keys[1]
-            i += 1        
-
+            i += 1
 
         # freqent_itemset_keys = sorted(freqent_itemset_keys.items(), key = lambda kv:(kv[0]), reverse = False)
         # print(freqent_itemset_keys)
         ##
         ## Generation of ordered_frequent_itemset for each transaction
         ##
-        
-        for i in range(0,length):
+        # print(list(freqent_itemset_keys.keys()))
+
+        for i in range(0, length):
             data = dataset[i].item
             ordered_frequent_itemset[dataset[i].t_id] = []
             for key_frequent in freqent_itemset_keys:
@@ -236,8 +235,9 @@ class transactionMapping:
         
 
         self.printSubTree(root)
-        
-        
+
+        # self.printSubTree(root)
+
         ##
         ## Construction on Interval Lists
         ##
@@ -295,14 +295,14 @@ class transactionMapping:
 
 
 def main():
-    t_1 = horizontalDataset(1,[2,1,5,3,19,20])
-    t_2 = horizontalDataset(2,[2,6,3])
-    t_3 = horizontalDataset(3,[1,7,8])
-    t_4 = horizontalDataset(4,[3,1,9,10])
-    t_5 = horizontalDataset(5,[2,1,11,3,17,18])
-    t_6 = horizontalDataset(6,[2,4,12])
-    t_7 = horizontalDataset(7,[1,13,14])
-    t_8 = horizontalDataset(8,[2,15,4,16])
+    t_1 = horizontalDataset(1, [2, 1, 5, 3, 19, 20])
+    t_2 = horizontalDataset(2, [2, 6, 3])
+    t_3 = horizontalDataset(3, [1, 7, 8])
+    t_4 = horizontalDataset(4, [3, 1, 9, 10])
+    t_5 = horizontalDataset(5, [2, 1, 11, 3, 17, 18])
+    t_6 = horizontalDataset(6, [2, 4, 12])
+    t_7 = horizontalDataset(7, [1, 13, 14])
+    t_8 = horizontalDataset(8, [2, 15, 4, 16])
 
     dataset = []
     dataset.append(t_1)
