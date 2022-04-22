@@ -4,16 +4,9 @@ Created on 17-Feb-2022
 @author: Nachiket Deo
 '''
 import copy
-
-# class items:
-#     itemset = []
-#     no_items = int()
-
-from collections import OrderedDict
-from logging import root
 import queue
 from nbformat import current_nbformat
-from lexicographic_tree import LexicographicTree
+from lexicographic_tree import LexicoNode
 
 class horizontalDataset:
     t_id = int()
@@ -45,33 +38,55 @@ class TreeNode:
     def findChild(self,data):
         return self.children[data]
     
-    def DFS_interval_list_intersection(node,findItem):
         
+    ##
+    ## To locate a node with specified item_id in the Transaction Tree
+    ##
 
-    def searchNodeBFS(self,root,searchItem,searchChildren):
+    def searchNodeBFS(self,searchItem,searchChildren):
         
+        output_interval_range = []
+        output_searchItemRange = []
         q = queue.Queue()
         visited = []
 
         #print(source.getId())
-        q.put(root)
+        q.put(self)
 
-        visited.append(root.item_id)
-
-        #print("visited",visited)
+        visited.append(self.item_id)
 
         while( q.empty() == False):
             v = q.get()
+
             if v.item_id == searchItem:
-
                 
+                sub_q = queue.Queue()
+                sub_q.put(v)
 
-            for nbr in v.getConnections():
-                if nbr.getId() not in visited:
-                    q.put(nbr)
-                    visited.append(nbr.getId())
+                sub_visited = []
+                sub_visited.append(v.item_id)
+                output_searchItemRange.append(v.interval_start)
+                output_searchItemRange.append(v.interval_end)
+                while (sub_q.empty() == False):
+                    
+                    b = sub_q.get()
+                    for key,chd in b.children.items():
+                        #if key not in sub_visited:
+                        sub_q.put(chd)
+                        sub_visited.append(key)
+                        if key in searchChildren:
+                            output_interval_range.append([chd.item_id,chd.interval_start,chd.interval_end])
 
-        return visited
+                out_tree_node = v
+
+            else:
+
+                for key,nbr in v.children.items():
+                    if key not in visited:
+                        q.put(nbr)
+                        visited.append(key)
+
+        return output_interval_range,output_searchItemRange,out_tree_node
 
 
 class transactionMapping:
@@ -128,30 +143,7 @@ class transactionMapping:
                     value.interval_end = e_i
                     e_i_prime = e_i
                     
-    def constructLexicographicTree():
-
     
-    def binSearch(self, arr, target): 
-        left = 0 
-        right = len(arr) - 1
-
-        while left <= right: 
-            mid = left + (right - left) // 2
-
-            # Base case: Checks if target value is found in the middle. 
-            if arr[mid] == target: 
-                return mid # Returns an index value
-            
-            # Disregard left half of array if target is greater... 
-            elif arr[mid] < target: 
-                left = mid + 1
-
-            # Disregard right half of array if target is less than... 
-            elif arr[mid] > target: 
-                right = mid - 1
-
-        return None
-
     def printSubTree(self,node:TreeNode):
         
         q = []  # Create a queue
@@ -225,8 +217,7 @@ class transactionMapping:
         ##
         ## Generation of ordered_frequent_itemset for each transaction
         ##
-        #print(list(freqent_itemset_keys.keys()))
-
+        
         for i in range(0,length):
             data = dataset[i].item
             ordered_frequent_itemset[dataset[i].t_id] = []
@@ -239,7 +230,7 @@ class transactionMapping:
 
 
         root = TreeNode(None,None,{},interval_start = 1)
-        #current_node = copy.copy(root)
+        
         for key,value in ordered_frequent_itemset.items():
             self.buildSubTree(root,value,0)
         
@@ -255,16 +246,47 @@ class transactionMapping:
 
         return root,freqent_itemset_keys
     
-    def constructLexicographicTree(root:TreeNode,freqent_itemset_keys:dict):
+    def findIntersection(self,intervals_1,interval_2):
+        return max(0, min(intervals_1[1], interval_2[1]) - max(intervals_1[0], interval_2[0]) + 1)
+
+    
+    def depth_first_search_lexicographic_tree_build(self,lex_node:TreeNode,root:TreeNode):
+        
+        searchChildren = []
+        lst = list(lex_node.data)
+        print("List of the Lexicographic Node",lst)
+
+        for j in range(0,len(lst)-1):
+        
+            for i in range(j+1,len(lst)):
+                searchChildren.append(lst[i])   
+
+            out_range,output_searchItemRange,tree_node_current = root.searchNodeBFS(lst[j],searchChildren=searchChildren)
+            print(out_range,output_searchItemRange)
+
+            if len(out_range) != 0:
+
+                new_node_data = []
+                for node_data in out_range:   
+                    support_count = self.findIntersection( [ node_data[1],node_data[2] ], output_searchItemRange )
+                    print(support_count)
+                    if support_count >= 2:
+                        new_node_data.append(node_data[0])
+                
+                if new_node_data:
+
+                    child = LexicoNode(new_node_data, {})     
+                    lex_node.add_node(lst[j],child)
+                    self.depth_first_search_lexicographic_tree_build(child,tree_node_current)
+
+        return;       
+
+    def constructLexicographicTree(self,root:TreeNode,freqent_itemset_keys:dict):
 
         lex = LexicoNode(freqent_itemset_keys.keys(), {})
+        self.depth_first_search_lexicographic_tree_build(lex,root)
 
-        for i in range(0,len(lex.data)):
-            lex.data[i]   
-            
-
-
-
+        lex.print_out()
 
             
        
@@ -292,7 +314,9 @@ def main():
     dataset.append(t_7)
     dataset.append(t_8)
     tm = transactionMapping()
-    tm.createTransactionTree(dataset = dataset,length = 8)
+    root,freqent_itemset_keys = tm.createTransactionTree(dataset = dataset,length = 8)
     
+    tm.constructLexicographicTree(root,freqent_itemset_keys)
+
 if __name__ == '__main__': 
     main()
