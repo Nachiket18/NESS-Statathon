@@ -41,20 +41,23 @@ class TreeNode:
     def incrementCount(self):
         self.item_count += 1
 
-    def searchNodeBFS(self, root, searchItem, searchChildren):
-        q = queue.Queue()
-        visited = []
+    ##
+    ## To locate a node with specified item_id in the Transaction Tree
+    ##
+
+    def searchNodeBFS(self,searchItem,searchChildren):
+        
         output_interval_range = []
         output_searchItemRange = []
+        q = queue.Queue()
+        visited = []
 
-        # print(source.getId())
-        q.put(root)
+        #print(source.getId())
+        q.put(self)
 
-        visited.append(root.item_id)
+        visited.append(self.item_id)
 
-        # print("visited",visited)
-
-        while q.empty() == False:
+        while( q.empty() == False):
             v = q.get()
 
             if v.item_id == searchItem:
@@ -289,10 +292,7 @@ class transactionMapping:
         lex.print_out()
 
             
-       
-
-
-
+    
 
 def main():
     t_1 = horizontalDataset(1, [2, 1, 5, 3, 19, 20])
