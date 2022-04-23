@@ -1,5 +1,5 @@
-# Weather Anomaly Detection
-Repository for algorithmic implementation of Anomaly Detection in weather using association rule mining.
+# NESS - Statathon
+Repository for algorithmic implementation of Frequent Itemset mining algorithm knows as Transaction Mapping and build a rule based classifier.
 
 # Resources
 
