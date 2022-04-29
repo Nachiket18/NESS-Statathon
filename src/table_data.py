@@ -5,6 +5,7 @@ Other Contributors:
 """
 #import anomaly_detection as anom_detect
 import json
+import string
 
 
 class Table:
@@ -133,15 +134,32 @@ def csv_to_data(file_path: str, data_range: list):  # data_range - from what to 
 
     file_path: str - Path to CSV file
     data_range: list - Range of data in CSV to be extracted and converted.
-                       Formatted as: (lower bound, upper bound)
+                       Formatted as either: 
+                            -  (lower bound, upper bound) 
+                                    [for single bound range]
+                            -  ((lower bound 1, upper bound 1),
+                                (lower bound 2, upper bound 2),
+                                ...) 
+                                    [for multiple, separate bound ranges]
     """
 
     with open(file_path, "r") as f:
+        def _get_data(d_r: int, file: string) -> list:
+            return file.split(",")[(d_r[0] - 1) : d_r[1]]
 
         data = []
 
         for i in f.readlines():
-            data.append(i.split(",")[(data_range[0] - 1) : data_range[1]])
+            if type(data_range[0]) is list or type(data_range[0]) is tuple:
+                dat_row = []
+
+                for d_r in data_range:
+                    dat_row += _get_data(d_r, i)
+                data.append(dat_row)
+                #data = [x for dat_list in data for x in dat_list]
+
+            else:
+                data.append(_get_data(data_range, i))
 
             
             # Temperature[3] - App. Temperature[4] - Humidty[5] - Wind Speed[6] - Wind Bearing[7]
@@ -198,7 +216,11 @@ def process_table(table: Table) -> Table:
 if __name__ == "__main__":
 
     #x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
-    x = csv_to_data("data/train.csv", (5, 17))
+    #x = csv_to_data("data/train.csv", (5, 17))
+    x = csv_to_data("data/train.csv", [ (6, 7), #age, len.at.res
+                                        (11, 11), #premiums
+                                        (15, 16) #adults, children
+                                        ])
     col_names = x[0]
     x.pop(0)
 
