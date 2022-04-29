@@ -235,19 +235,3 @@ if __name__ == "__main__":
         
         print(dis_test)
         print("\n")
-
-    exit()
-
-    horiz_ds = []
-    for i in range(1):
-        data = x[i][0:3]
-        dis_dat = discretize_data(x[i][0:3], tgg)
-
-        # print(data, dis_dat)
-
-        horiz_ds.append(anom_detect.horizontalDataset(i, dis_dat))
-
-        tM = anom_detect.transactionMapping()
-
-        tM.createTransactionTree(dataset=horiz_ds, length=len(horiz_ds))
-        print(tM)
