@@ -3,7 +3,7 @@
 
 Other Contributors:
 """
-import anomaly_detection as anom_detect
+#import anomaly_detection as anom_detect
 import json
 
 
@@ -142,6 +142,8 @@ def csv_to_data(file_path: str, data_range: list):  # data_range - from what to 
 
         for i in f.readlines():
             data.append(i.split(",")[(data_range[0] - 1) : data_range[1]])
+
+            
             # Temperature[3] - App. Temperature[4] - Humidty[5] - Wind Speed[6] - Wind Bearing[7]
             # Visibility[8] - Loud Cover[9] - Pressure[10]
 
@@ -195,13 +197,17 @@ def process_table(table: Table) -> Table:
 
 if __name__ == "__main__":
 
-    x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
+    #x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
+    x = csv_to_data("data/train.csv", (5, 17))
+    col_names = x[0]
     x.pop(0)
 
-    tgg = json_to_tables("src/data/tables_test.json")
-    tgg.process_all()
+    #tgg = json_to_tables("src/data/tables_test.json")
+    #tgg.process_all()
 
-    print([x.entries for x in tgg.tables], [x.keys for x in tgg.tables])
+    #print([x.entries for x in tgg.tables], [x.keys for x in tgg.tables])
+
+    print(x)
 
     exit()
 
