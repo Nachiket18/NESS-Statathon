@@ -42,19 +42,17 @@ class Table:
         Checks a data point if it is within one of the stored ranges and returns the key of said range.
         """
         data = float(data)
-        for i in range(
-            len(self.entries)
-        ):  # Checks each range until it finds the matching one
-            val = list(self.entries.values())[
-                i
-            ]  # val[0] - Lower Range, val[1] - Upper Range
+        for i in range(len(self.entries)):  # Checks each range until it finds the matching one
+
+            val = list(self.entries.values())[i]  # val[0] - Lower Range, val[1] - Upper Range
+
             if (val[0] is None or data >= val[0]) and (
-                val[1] is None or data <= val[1]
-            ):  # If data is greater than lower and less than upper
+                val[1] is None or data <= val[1]):  
+                # If data is greater than lower and less than upper
                 # (None is when range goes to -inf or inf)
 
                 return list(self.entries.keys())[i]  # Return corresponding range id
-            return [None]
+        return [None]
 
     def is_processed(self) -> bool:
         """
@@ -224,12 +222,19 @@ if __name__ == "__main__":
     col_names = x[0]
     x.pop(0)
 
-    #tgg = json_to_tables("src/data/tables_test.json")
-    #tgg.process_all()
+    tgg = json_to_tables("data/train.json")
+    tgg.process_all()
 
-    #print([x.entries for x in tgg.tables], [x.keys for x in tgg.tables])
+    print([x.entries for x in tgg.tables])
 
-    print(x)
+    #print(x)
+
+    for i in range(10):
+        dis_test = discretize_data(x[i], tgg)
+        print(x[i])
+        
+        print(dis_test)
+        print("\n")
 
     exit()
 
