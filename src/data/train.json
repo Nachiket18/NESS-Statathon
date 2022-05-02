@@ -35,10 +35,10 @@
         "1200-1250": [1200, 1250]
     },
     "adults": {
-        "Zero": [0, 2],
-        "One": [2, 5],
-        "Two": [5, 8],
-        "Three": [8, null]
+        "Zero-Two": [0, 2],
+        "Two-Five": [2, 5],
+        "Five-Eight": [5, 8],
+        "Eight-More": [8, null]
     },
     "children": {
         "child_0": [0, 2],
