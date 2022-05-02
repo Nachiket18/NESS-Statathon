@@ -3,8 +3,13 @@
 
 Other Contributors:
 """
-import anomaly_detection as anom_detect
+#import anomaly_detection as anom_detect
 import json
+from multiprocessing.sharedctypes import Value
+import string
+
+from anomaly_detection import horizontalDataset,transactionMapping
+from lexicographic_tree import LexicoNode
 
 
 class Table:
@@ -40,20 +45,18 @@ class Table:
         """
         Checks a data point if it is within one of the stored ranges and returns the key of said range.
         """
-        data = float(data)
-        for i in range(
-            len(self.entries)
-        ):  # Checks each range until it finds the matching one
-            val = list(self.entries.values())[
-                i
-            ]  # val[0] - Lower Range, val[1] - Upper Range
+        #data = float(data)
+        for i in range(len(self.entries)):  # Checks each range until it finds the matching one
+
+            val = list(self.entries.values())[i]  # val[0] - Lower Range, val[1] - Upper Range
+
             if (val[0] is None or data >= val[0]) and (
-                val[1] is None or data <= val[1]
-            ):  # If data is greater than lower and less than upper
+                val[1] is None or data <= val[1]):  
+                # If data is greater than lower and less than upper
                 # (None is when range goes to -inf or inf)
 
                 return list(self.entries.keys())[i]  # Return corresponding range id
-            return [None]
+        return [None]
 
     def is_processed(self) -> bool:
         """
@@ -73,6 +76,10 @@ class Table:
         self.__dict__.update(process_table(self).__dict__)
         # Takes the __dict__ of the table generated in process_table, and overrides
         # its __dict__ with the new table's, effectively changing it to the new table.
+    
+    def decipher_data(self, inter: int):
+        return self.keys[inter] if self.is_processed() else None
+        
 
 
 class TableGroup:
@@ -126,6 +133,11 @@ class TableGroup:
             assert isinstance(i, Table)
             i.process_table()
 
+    def decipher_datas(self, inters: list):
+        return ([self.tables[i].decipher_data(inters[i]) for i in range(len(self.tables))] 
+                if len(inters) == len(self.tables) 
+                else None)
+
 
 def csv_to_data(file_path: str, data_range: list):  # data_range - from what to what
     """
@@ -133,22 +145,46 @@ def csv_to_data(file_path: str, data_range: list):  # data_range - from what to 
 
     file_path: str - Path to CSV file
     data_range: list - Range of data in CSV to be extracted and converted.
-                       Formatted as: (lower bound, upper bound)
+                       Formatted as either: 
+                            -  (lower bound, upper bound) 
+                                    [for single bound range]
+                            -  ((lower bound 1, upper bound 1),
+                                (lower bound 2, upper bound 2),
+                                ...) 
+                                    [for multiple, separate bound ranges]
     """
+    def _float_if_float(x):
+        try:
+            return float(x)
+        except ValueError:
+            return x
 
     with open(file_path, "r") as f:
+        def _get_data(d_r: int, file: string) -> list:
+            return [_float_if_float(x) for x in file.split(",")[(d_r[0] - 1) : d_r[1]]]
 
         data = []
 
         for i in f.readlines():
-            data.append(i.split(",")[(data_range[0] - 1) : data_range[1]])
+            if type(data_range[0]) is list or type(data_range[0]) is tuple:
+                dat_row = []
+
+                for d_r in data_range:
+                    dat_row += _get_data(d_r, i)
+                data.append(dat_row)
+                #data = [x for dat_list in data for x in dat_list]
+
+            else:
+                data.append(_get_data(data_range, i))
+
+            
             # Temperature[3] - App. Temperature[4] - Humidty[5] - Wind Speed[6] - Wind Bearing[7]
             # Visibility[8] - Loud Cover[9] - Pressure[10]
 
     return data
 
 
-def json_to_tables(file_path: str, return_tablegroup=True) -> TableGroup | Table | list:
+def json_to_tables(file_path: str, return_tablegroup=True):
     """
     A function to convert JSON files of tables to Table classes.
 
@@ -195,26 +231,47 @@ def process_table(table: Table) -> Table:
 
 if __name__ == "__main__":
 
-    x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
+    #x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
+    #x = csv_to_data("data/train.csv", (5, 17))
+    
+    x = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (6, 7), #age, len.at.res
+                                        (11, 11), #premiums
+                                        (15, 17) #adults, children,tenure
+                                        ])
+    y = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (5,5), #age, len.at.res
+                                        (8, 10), #premiums
+                                        (18,18) #adults, children,tenure
+                                        ])
+
+    col_names = x[0]
     x.pop(0)
+    y.pop(0)
 
-    tgg = json_to_tables("src/data/tables_test.json")
-    tgg.process_all()
+    tgg = json_to_tables("E:/Weather_AnomalyDetection/src/data/train.json")
+    #tgg.process_all()
 
-    print([x.entries for x in tgg.tables], [x.keys for x in tgg.tables])
+    #print([x.entries for x in tgg.tables])
+    print(tgg.__dict__)
+    #print(x)
 
-    exit()
+    discrete_processed_data = []
+    for i in range(10):
+        print(x[i])
+        dis_test = discretize_data(x[i], tgg)
+        #print(x[i])
+        
+        print(dis_test + y[i])
+        dis_test = dis_test + y[i]
 
-    horiz_ds = []
-    for i in range(1):
-        data = x[i][0:3]
-        dis_dat = discretize_data(x[i][0:3], tgg)
+        discrete_processed_data.append(dis_test)
+    print(discrete_processed_data)
 
-        # print(data, dis_dat)
+    data_set_algorithm = []
+    for i in range(0,len(discrete_processed_data)):
+        tmp = discrete_processed_data[i]
+        data_set_algorithm.append(horizontalDataset(i,tmp))
 
-        horiz_ds.append(anom_detect.horizontalDataset(i, dis_dat))
-
-        tM = anom_detect.transactionMapping()
-
-        tM.createTransactionTree(dataset=horiz_ds, length=len(horiz_ds))
-        print(tM)
+    tm = transactionMapping()
+    root,freqent_itemset_keys = tm.createTransactionTree(dataset = data_set_algorithm,length = 8)
+    
+    tm.constructLexicographicTree(root,freqent_itemset_keys)
