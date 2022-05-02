@@ -246,7 +246,7 @@ class transactionMapping:
         # print("fq",freqent_itemset)
 
         freqent_itemset_sorted = sorted(
-            freqent_itemset.items(), key=lambda kv: (kv[1], -kv[0]), reverse=True
+            freqent_itemset, key=lambda kv: (kv[1], -kv[0]), reverse=True
         )
 
         # print(freqent_itemset_sorted)

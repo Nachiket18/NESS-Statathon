@@ -8,7 +8,8 @@ import json
 from multiprocessing.sharedctypes import Value
 import string
 
-from anomaly_detection import horizontalDataset
+from anomaly_detection import horizontalDataset,transactionMapping
+from lexicographic_tree import LexicoNode
 
 
 class Table:
@@ -247,7 +248,7 @@ if __name__ == "__main__":
     y.pop(0)
 
     tgg = json_to_tables("E:/Weather_AnomalyDetection/src/data/train.json")
-    tgg.process_all()
+    #tgg.process_all()
 
     #print([x.entries for x in tgg.tables])
     print(tgg.__dict__)
@@ -268,7 +269,9 @@ if __name__ == "__main__":
     data_set_algorithm = []
     for i in range(0,len(discrete_processed_data)):
         tmp = discrete_processed_data[i]
-        
-        #tgg.dec
+        data_set_algorithm.append(horizontalDataset(i,tmp))
 
-        data_set_algorithm.append(horizontalDataset(i,[]))
+    tm = transactionMapping()
+    root,freqent_itemset_keys = tm.createTransactionTree(dataset = data_set_algorithm,length = 8)
+    
+    tm.constructLexicographicTree(root,freqent_itemset_keys)
