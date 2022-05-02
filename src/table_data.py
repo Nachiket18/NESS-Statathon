@@ -5,7 +5,10 @@ Other Contributors:
 """
 #import anomaly_detection as anom_detect
 import json
+from multiprocessing.sharedctypes import Value
 import string
+
+from anomaly_detection import horizontalDataset
 
 
 class Table:
@@ -41,7 +44,7 @@ class Table:
         """
         Checks a data point if it is within one of the stored ranges and returns the key of said range.
         """
-        data = float(data)
+        #data = float(data)
         for i in range(len(self.entries)):  # Checks each range until it finds the matching one
 
             val = list(self.entries.values())[i]  # val[0] - Lower Range, val[1] - Upper Range
@@ -140,10 +143,15 @@ def csv_to_data(file_path: str, data_range: list):  # data_range - from what to 
                                 ...) 
                                     [for multiple, separate bound ranges]
     """
+    def _float_if_float(x):
+        try:
+            return float(x)
+        except ValueError:
+            return x
 
     with open(file_path, "r") as f:
         def _get_data(d_r: int, file: string) -> list:
-            return file.split(",")[(d_r[0] - 1) : d_r[1]]
+            return [_float_if_float(x) for x in file.split(",")[(d_r[0] - 1) : d_r[1]]]
 
         data = []
 
@@ -166,7 +174,7 @@ def csv_to_data(file_path: str, data_range: list):  # data_range - from what to 
     return data
 
 
-def json_to_tables(file_path: str, return_tablegroup=True) -> TableGroup | Table | list:
+def json_to_tables(file_path: str, return_tablegroup=True):
     """
     A function to convert JSON files of tables to Table classes.
 
@@ -215,23 +223,43 @@ if __name__ == "__main__":
 
     #x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     #x = csv_to_data("data/train.csv", (5, 17))
-    x = csv_to_data("data/train.csv", [ (6, 7), #age, len.at.res
+    
+    x = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (6, 7), #age, len.at.res
                                         (11, 11), #premiums
-                                        (15, 16) #adults, children
+                                        (15, 17) #adults, children,tenure
                                         ])
+    y = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (5,5), #age, len.at.res
+                                        (8, 10), #premiums
+                                        (18,18) #adults, children,tenure
+                                        ])
+
     col_names = x[0]
     x.pop(0)
+    y.pop(0)
 
-    tgg = json_to_tables("data/train.json")
+    tgg = json_to_tables("E:/Weather_AnomalyDetection/src/data/train.json")
     tgg.process_all()
 
-    print([x.entries for x in tgg.tables])
-
+    #print([x.entries for x in tgg.tables])
+    print(tgg.__dict__)
     #print(x)
 
+    discrete_processed_data = []
     for i in range(10):
-        dis_test = discretize_data(x[i], tgg)
         print(x[i])
+        dis_test = discretize_data(x[i], tgg)
+        #print(x[i])
         
-        print(dis_test)
-        print("\n")
+        print(dis_test + y[i])
+        dis_test = dis_test + y[i]
+
+        discrete_processed_data.append(dis_test)
+    print(discrete_processed_data)
+
+    data_set_algorithm = []
+    for i in range(0,len(discrete_processed_data)):
+        tmp = discrete_processed_data[i]
+        
+        #tgg.dec
+
+        data_set_algorithm.append(horizontalDataset(i,[]))
