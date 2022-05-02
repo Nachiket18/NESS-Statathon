@@ -234,11 +234,11 @@ if __name__ == "__main__":
     #x = csv_to_data("src/data/weatherHistory.csv", (4, 11))
     #x = csv_to_data("data/train.csv", (5, 17))
     
-    x = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (6, 7), #age, len.at.res
+    x = csv_to_data("src/data/train.csv", [ (6, 7), #age, len.at.res
                                         (11, 11), #premiums
                                         (15, 17) #adults, children,tenure
                                         ])
-    y = csv_to_data("E:/Weather_AnomalyDetection/src/data/train.csv", [ (5,5), #age, len.at.res
+    y = csv_to_data("src/data/train.csv", [ (5,5), #age, len.at.res
                                         (8, 10), #premiums
                                         (18,18) #adults, children,tenure
                                         ])
