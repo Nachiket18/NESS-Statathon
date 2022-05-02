@@ -75,6 +75,10 @@ class Table:
         self.__dict__.update(process_table(self).__dict__)
         # Takes the __dict__ of the table generated in process_table, and overrides
         # its __dict__ with the new table's, effectively changing it to the new table.
+    
+    def decipher_data(self, inter: int):
+        return self.keys[inter] if self.is_processed() else None
+        
 
 
 class TableGroup:
@@ -127,6 +131,11 @@ class TableGroup:
         for i in self.tables:
             assert isinstance(i, Table)
             i.process_table()
+
+    def decipher_datas(self, inters: list):
+        return ([self.tables[i].decipher_data(inters[i]) for i in range(len(self.tables))] 
+                if len(inters) == len(self.tables) 
+                else None)
 
 
 def csv_to_data(file_path: str, data_range: list):  # data_range - from what to what
